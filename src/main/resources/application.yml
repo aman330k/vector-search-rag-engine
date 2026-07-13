@@ -1,0 +1,35 @@
+server:
+  # 8081, not 8080 — kept free in case another local service (e.g. a different
+  # Spring Boot app) is already using the common default port 8080.
+  port: 8081
+
+spring:
+  application:
+    name: vectordb-java
+
+# ── Application-specific configuration ────────────────────────────────
+# All values are bound into VectorDbProperties. Override any of them with
+# environment variables, e.g. OLLAMA_HOST=http://192.168.1.5:11434
+vectordb:
+  # Local Ollama server (install from https://ollama.com)
+  ollama:
+    base-url: http://127.0.0.1:11434
+    embed-model: nomic-embed-text
+    gen-model: llama3.2:1b
+    # timeouts in seconds — LLM generation can be slow on a laptop CPU
+    connect-timeout-seconds: 3
+    embed-timeout-seconds: 30
+    generate-timeout-seconds: 180
+  # Disk persistence: where the document store snapshot is saved/loaded
+  persistence:
+    enabled: true
+    snapshot-file: ./data/documents-snapshot.json
+  # Default chunking parameters for document ingestion
+  chunking:
+    strategy: word            # "word" (fixed-size windows) or "sentence"
+    chunk-words: 250
+    overlap-words: 30
+
+logging:
+  level:
+    com.learn.vectordb: INFO

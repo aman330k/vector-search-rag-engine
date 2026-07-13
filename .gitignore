@@ -1,0 +1,19 @@
+# Maven
+target/
+*.class
+
+# Persistence snapshots (runtime data)
+data/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.user
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

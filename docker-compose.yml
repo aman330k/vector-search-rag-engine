@@ -1,0 +1,35 @@
+# Run the app and Ollama together with:  docker compose up --build
+#
+# NOTE for Apple Silicon (M1/M2/M3) Macs: Ollama in a Linux container runs on CPU only and
+# cannot use the Mac GPU, so it is noticeably slower. For best performance, run Ollama natively
+# on the host (brew install ollama; ollama serve) and start ONLY the app container with:
+#     docker compose up --build app
+# The app defaults to http://host.docker.internal:11434 to reach host Ollama in that case.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vectordb-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    # Pull models once the server is up:  docker exec vectordb-ollama ollama pull nomic-embed-text
+
+  app:
+    build: .
+    container_name: vectordb-app
+    ports:
+      - "8081:8081"
+    environment:
+      # When running the full stack, point at the ollama service instead of the host.
+      VECTORDB_OLLAMA_BASEURL: "http://ollama:11434"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  ollama-models:
